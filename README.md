@@ -1,7 +1,5 @@
 [![Python Template for IDS706](https://github.com/claireoh-duke/python_template_706/actions/workflows/main.yml/badge.svg)](https://github.com/claireoh-duke/python_template_706/actions/workflows/main.yml)
 
-[![Python Template for IDS706](https://github.com/zhongyuan-duke/IDS-706-week-1-template/actions/workflows/main.yml/badge.svg)](https://github.com/zhongyuan-duke/IDS-706-week-1-template/actions/workflows/main.yml)
-
 ## Create your first project for Data Engineering Systems (IDS 706)
 
 ## Two approaches:
