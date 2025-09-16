@@ -34,7 +34,7 @@ Steps
 4. You are now inside a reproducible dev environment 🎉
 
 ## ▶️ Running & Testing
-### 1️⃣ **Run Main Script**  
+Run Main Script: 
 Inside the Dev Container:
 ```bash
 python HW2_Claire\ Oh.py
