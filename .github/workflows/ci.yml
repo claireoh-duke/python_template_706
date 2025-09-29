@@ -1,5 +1,7 @@
 name: Crypto Data Analysis CI   
+
 on: push
+
 jobs:
   build:                       
     runs-on: ubuntu-latest     
