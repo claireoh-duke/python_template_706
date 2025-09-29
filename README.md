@@ -1,3 +1,5 @@
+[![Crypto Data Analysis CI](https://github.com/claireoh-duke/python_template_706/actions/workflows/ci.yml/badge.svg)](https://github.com/claireoh-duke/python_template_706/actions/workflows/ci.yml)
+
 ## 📊 Crypto Data Analysis
 This project explores Bitcoin (BTC) and Ethereum (ETH) price data through data cleaning, feature engineering, exploratory data analysis (EDA), and machine learning modeling. The goal is to understand price movements, engineer predictive features, and train models to forecast short-term (5-day ahead) closing prices.
 
