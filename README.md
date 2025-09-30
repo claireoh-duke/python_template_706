@@ -1,5 +1,7 @@
 ## 📊 Crypto Data Analysis
+We hope to predict cryptocurrency prices accurately so we can become millionaires! This project started from that hope. We asked ourselves, Can we predict prices based on historical data?
 This project explores Bitcoin (BTC) and Ethereum (ETH) price data through data cleaning, feature engineering, exploratory data analysis (EDA), and machine learning modeling. The goal is to understand price movements, engineer predictive features, and train models to forecast short-term (5-day ahead) closing prices.
+
 
 ## 📂 Project Structure
 
@@ -40,7 +42,7 @@ crypto-data-analysis/
 ```
 ### 4️⃣ Feature Engineering
 ```text
-• Compute log returns (1-day, 3-day, 7-day)  
+• Compute lag returns (1-day, 3-day, 7-day)  
 • Calculate moving averages (7-day, 21-day)  
 • Create volatility metrics:
     - high_low_diff = high - low
@@ -74,3 +76,21 @@ crypto-data-analysis/
 • Add regression trendlines for better interpretation  
 • Fully interactive plots for visual exploration  
 ```
+
+## 📊 Visualization 
+### **Feature Importance**  
+Usually, we use lag returns, moving averages, and RSI to predict asset prices. It turns out that lag returns have higher importance for prediction.
+![Plot of Feature Importance](Feature_Importance.png)
+
+### **Time Series of Closing Price**
+As shown in the plot, BTC exhibited greater volatility in price changes.
+![Plot of BTC_ETH](newplot.png)
+
+### **Price Predicted**
+The prediction model for ETH fit the data better than the one for BTC.
+![Plot of Predicted BTC price](BTC Predicted Prices.png)
+![Plot of Predicted ETH price](ETH Predicted Price.png)
+
+## 📍 Conclusion 
+Overall, this project demonstrates that while historical data and engineered features can provide reasonable predictive power, cryptocurrency prices remain volatile and challenging to forecast accurately. Future work could explore additional features, alternative modeling approaches, or higher-frequency data to further improve predictions.
+We found that the more volatile an asset's price is, the harder it is to predict. For example, BTC exhibited higher volatility than ETH, which made BTC prices more difficult to forecast with our models.

@@ -5,112 +5,133 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy import stats
+from sklearn.model_selection import train_test_split
+from xgboost import XGBRegressor
+from sklearn.metrics import mean_squared_error, r2_score
+import matplotlib.dates as mdates
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.io as pio
+from plotly.subplots import make_subplots
+
+pio.renderers.default = "browser"
 
 # 2. Load Datasets
-df1 = pd.read_csv("/Users/otting/Desktop/Data/BTC.csv")
-df2 = pd.read_csv("/Users/otting/Desktop/Data/ETH.csv")
+btc_df = pd.read_csv("BTC.csv")
+eth_df = pd.read_csv("ETH.csv")
 print("Bitcoin Data:")
-print(df1.head())
+print(btc_df.head())
 print("\nEthereum Data:")
-print(df2.head())
+print(eth_df.head())
 
 # %%
 # 3. Data Cleaning
 
 # Check for missing values
-print("Missing values in BTC data:\n", df1.isnull().sum())
-print("Missing values in ETH data:\n", df2.isnull().sum())
+print("Missing values in BTC data:\n", btc_df.isnull().sum())
+print("Missing values in ETH data:\n", eth_df.isnull().sum())
 
 # Drop duplicates
-df1.drop_duplicates(inplace=True)
-df2.drop_duplicates(inplace=True)
+btc_df.drop_duplicates(inplace=True)
+eth_df.drop_duplicates(inplace=True)
 
-print("Cleaned BTC Shape:", df1.shape)
-print("Cleaned ETH Shape:", df2.shape)
+print("Cleaned BTC Shape:", btc_df.shape)
+print("Cleaned ETH Shape:", eth_df.shape)
 
 # Detect simple outliers using Z-score
-from scipy import stats
 
-z_scores_btc = np.abs(stats.zscore(df1.select_dtypes(include=[np.number])))
-z_scores_eth = np.abs(stats.zscore(df2.select_dtypes(include=[np.number])))
-df1 = df1[(z_scores_btc < 3).all(axis=1)]
-df2 = df2[(z_scores_eth < 3).all(axis=1)]
-print("BTC Shape after outlier removal:", df1.shape)
-print("ETH Shape after outlier removal:", df2.shape)
+z_scores_btc = np.abs(stats.zscore(btc_df.select_dtypes(include=[np.number])))
+z_scores_eth = np.abs(stats.zscore(eth_df.select_dtypes(include=[np.number])))
+btc_df = btc_df[(z_scores_btc < 3).all(axis=1)]
+eth_df = eth_df[(z_scores_eth < 3).all(axis=1)]
+print("BTC Shape after outlier removal:", btc_df.shape)
+print("ETH Shape after outlier removal:", eth_df.shape)
 
 # %%
 # 4. Inspect Data
 
 # Data Overview
 print("BTC Data Info:")
-print(df1.info())
+print(btc_df.info())
 print("\nETH Data Info:")
-print(df2.info())
+print(eth_df.info())
 
 # %%
 # Statistical Summary
 print("BTC Statistical Summary:")
-print(df1.describe())
+print(btc_df.describe())
 print("\nETH Statistical Summary:")
-print(df2.describe())
+print(eth_df.describe())
 
 # %%
 # 5. Basic Filtering and Grouping
 # Filter data for specific date ranges
-print(df1[df1["date"] > "2022-12-08"].head(), "\n")
-print(df2[df2["date"] > "2010-12-23"].head(), "\n")
+print(btc_df[btc_df["date"] > "2022-12-08"].head(), "\n")
+print(eth_df[eth_df["date"] > "2010-12-23"].head(), "\n")
 # Filter data for high close prices
-max_btc = df1["close"].max()
-max_eth = df2["close"].max()
+max_btc = btc_df["close"].max()
+max_eth = eth_df["close"].max()
 
-print("BTC entries with max close price:\n", df1[df1["close"] == max_btc], "\n")
-print("ETH entries with max close price:\n", df2[df2["close"] == max_eth])
+print("BTC entries with max close price:\n", btc_df[btc_df["close"] == max_btc], "\n")
+print("ETH entries with max close price:\n", eth_df[eth_df["close"] == max_eth])
 
 # %%
 # Group by year and average close price
-df1["year"] = pd.to_datetime(df1["date"]).dt.year
-df2["year"] = pd.to_datetime(df2["date"]).dt.year
-btc_yearly_avg = df1.groupby("year")["close"].mean().reset_index()
-eth_yearly_avg = df2.groupby("year")["close"].mean().reset_index()
+btc_df["year"] = pd.to_datetime(btc_df["date"]).dt.year
+eth_df["year"] = pd.to_datetime(eth_df["date"]).dt.year
+btc_yearly_avg = btc_df.groupby("year")["close"].mean().reset_index()
+eth_yearly_avg = eth_df.groupby("year")["close"].mean().reset_index()
 print("BTC Yearly Average Close Prices:\n", btc_yearly_avg, "\n")
 print("ETH Yearly Average Close Prices:\n", eth_yearly_avg)
 
 # %%
 # 6. ML Modeling
 
+
 # Feature Engineering
 # 1) Lag returns
-df1["ret_1d"] = np.log(df1["close"] / df1["close"].shift(1))
-df2["ret_1d"] = np.log(df2["close"] / df2["close"].shift(1))
-df1["ret_3d"] = np.log(df1["close"] / df1["close"].shift(3))
-df2["ret_3d"] = np.log(df2["close"] / df2["close"].shift(3))
-df1["ret_7d"] = np.log(df1["close"] / df1["close"].shift(7))
-df2["ret_7d"] = np.log(df2["close"] / df2["close"].shift(7))
+def lag_return(btc_df, eth_df):
+    btc_df["ret_1d"] = np.log(btc_df["close"] / btc_df["close"].shift(1))
+    eth_df["ret_1d"] = np.log(eth_df["close"] / eth_df["close"].shift(1))
+    btc_df["ret_3d"] = np.log(btc_df["close"] / btc_df["close"].shift(3))
+    eth_df["ret_3d"] = np.log(eth_df["close"] / eth_df["close"].shift(3))
+    btc_df["ret_7d"] = np.log(btc_df["close"] / btc_df["close"].shift(7))
+    eth_df["ret_7d"] = np.log(eth_df["close"] / eth_df["close"].shift(7))
+
+
+lag_return(btc_df, eth_df)
 # 2) Moving averages
-df1["ma_7"] = df1["close"].rolling(window=7).mean()
-df2["ma_7"] = df2["close"].rolling(window=7).mean()
-df1["ma_21"] = df1["close"].rolling(window=21).mean()
-df2["ma_21"] = df2["close"].rolling(window=21).mean()
+btc_df["ma_7"] = btc_df["close"].rolling(window=7).mean()
+eth_df["ma_7"] = eth_df["close"].rolling(window=7).mean()
+btc_df["ma_21"] = btc_df["close"].rolling(window=21).mean()
+eth_df["ma_21"] = eth_df["close"].rolling(window=21).mean()
 # 3) Fluctuations
-df1["high_low_diff"] = df1["high"] - df1["low"]
-df2["high_low_diff"] = df2["high"] - df2["low"]
-df1["open_close_diff"] = df1["open"] - df1["close"]
-df2["open_close_diff"] = df2["open"] - df2["close"]
+btc_df["high_low_diff"] = btc_df["high"] - btc_df["low"]
+eth_df["high_low_diff"] = eth_df["high"] - eth_df["low"]
+btc_df["open_close_diff"] = btc_df["open"] - btc_df["close"]
+eth_df["open_close_diff"] = eth_df["open"] - eth_df["close"]
+
+
 # 4) RSI (Relative Strength Index)
-delta_btc = df1["close"].diff()
-gain_btc = (delta_btc.where(delta_btc > 0, 0)).rolling(window=14).mean()
-loss_btc = (-delta_btc.where(delta_btc < 0, 0)).rolling(window=14).mean()
-rs_btc = gain_btc / loss_btc
-df1["rsi"] = 100 - (100 / (1 + rs_btc))
-delta_eth = df2["close"].diff()
-gain_eth = (delta_eth.where(delta_eth > 0, 0)).rolling(window=14).mean()
-loss_eth = (-delta_eth.where(delta_eth < 0, 0)).rolling(window=14).mean()
-rs_eth = gain_eth / loss_eth
-df2["rsi"] = 100 - (100 / (1 + rs_eth))
+def rsi(btc_df, eth_df):
+    delta_btc = btc_df["close"].diff()
+    gain_btc = (delta_btc.where(delta_btc > 0, 0)).rolling(window=14).mean()
+    loss_btc = (-delta_btc.where(delta_btc < 0, 0)).rolling(window=14).mean()
+    rs_btc = gain_btc / loss_btc
+    btc_df["rsi"] = 100 - (100 / (1 + rs_btc))
+    delta_eth = eth_df["close"].diff()
+    gain_eth = (delta_eth.where(delta_eth > 0, 0)).rolling(window=14).mean()
+    loss_eth = (-delta_eth.where(delta_eth < 0, 0)).rolling(window=14).mean()
+    rs_eth = gain_eth / loss_eth
+    eth_df["rsi"] = 100 - (100 / (1 + rs_eth))
+
+
+rsi(btc_df, eth_df)
 
 # Remove NaN values from feature engineering
-df1.dropna(inplace=True)
-df2.dropna(inplace=True)
+btc_df.dropna(inplace=True)
+eth_df.dropna(inplace=True)
 
 # %%
 # features and target variable
@@ -124,10 +145,10 @@ features = [
     "open_close_diff",
     "rsi",
 ]
-x_btc = df1[features]
-y_btc = df1["close"].shift(-5)  # Predicting 5 days ahead
-x_eth = df2[features]
-y_eth = df2["close"].shift(-5)  # Predicting 5 days ahead
+x_btc = btc_df[features]
+y_btc = btc_df["close"].shift(-5)  # Predicting 5 days ahead
+x_eth = eth_df[features]
+y_eth = eth_df["close"].shift(-5)  # Predicting 5 days ahead
 
 # Romove NaN values from x, y
 x_btc = x_btc.iloc[:-5]
@@ -141,7 +162,7 @@ y_btc.reset_index(drop=True, inplace=True)
 
 # %%
 # train-test split
-from sklearn.model_selection import train_test_split
+
 
 x_btc_train, x_btc_test, y_btc_train, y_btc_test = train_test_split(
     x_btc, y_btc, test_size=0.2, shuffle=False
@@ -151,8 +172,6 @@ x_eth_train, x_eth_test, y_eth_train, y_eth_test = train_test_split(
 )
 
 # Model Training (XGBoost)
-from xgboost import XGBRegressor
-from sklearn.metrics import mean_squared_error, r2_score
 
 # BTC Model
 btc_model = XGBRegressor(
@@ -202,19 +221,43 @@ plt.tight_layout()
 plt.show()
 
 # %%
-# 8. Interactive Visualization with Plotly
-import plotly.express as px
-
-feature = "ma_7"
-
-fig = px.scatter(
-    df1,
-    x=feature,
+# 8. Visualization
+# 1) Time series plot
+btc_df["year"] = pd.to_datetime(btc_df["date"]).dt.year
+eth_df["year"] = pd.to_datetime(eth_df["date"]).dt.year
+btc_yearly = btc_df.groupby("year")["close"].mean().reset_index()
+btc_yearly["crypto"] = "BTC"
+eth_yearly = eth_df.groupby("year")["close"].mean().reset_index()
+eth_yearly["crypto"] = "ETH"
+combined_yearly = pd.concat([btc_yearly, eth_yearly])
+fig = px.line(
+    combined_yearly,
+    x="year",
     y="close",
-    title=f"BTC: {feature} vs Close Price",
-    labels={feature: feature, "close": "Close Price"},
-    trendline="ols",
+    color="crypto",
+    title="BTC vs ETH Yearly Average Closing Price",
 )
+fig.update_layout(xaxis_title="Year", yaxis_title="Average Close Price (USD)")
+
 fig.show()
+
+# 2)
+plt.figure(figsize=(12, 6))
+plt.plot(y_btc_test.values, label="Actual BTC", color="blue")
+plt.plot(btc_preds, label="Predicted BTC", color="orange")
+plt.title("BTC Actual vs Predicted Prices (5 days ahead)")
+plt.xlabel("Time")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.show()
+
+plt.figure(figsize=(12, 6))
+plt.plot(y_eth_test.values, label="Actual ETH", color="blue")
+plt.plot(eth_preds, label="Predicted ETH", color="orange")
+plt.title("ETH Actual vs Predicted Prices (5 days ahead)")
+plt.xlabel("Time")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.show()
 
 # %%
