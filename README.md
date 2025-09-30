@@ -115,8 +115,8 @@ As shown in the plot, BTC exhibited greater volatility in price changes.
 
 ### **Price Predicted**
 The prediction model for ETH fit the data better than the one for BTC.
-![Plot of Predicted BTC price](BTC Predicted Prices.png)
-![Plot of Predicted ETH price](ETH Predicted Price.png)
+![Plot of Predicted BTC price](BTC_Predict.png)
+![Plot of Predicted ETH price](ETH_Predict.png)
 
 ## 📍 Conclusion 
 Overall, this project demonstrates that while historical data and engineered features can provide reasonable predictive power, cryptocurrency prices remain volatile and challenging to forecast accurately. Future work could explore additional features, alternative modeling approaches, or higher-frequency data to further improve predictions.
