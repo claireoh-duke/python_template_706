@@ -1,3 +1,5 @@
+[![Crypto Data Analysis CI](https://github.com/claireoh-duke/python_template_706/actions/workflows/ci.yml/badge.svg)](https://github.com/claireoh-duke/python_template_706/actions/workflows/ci.yml)
+
 ## 📊 Crypto Data Analysis
 We hope to predict cryptocurrency prices accurately so we can become millionaires! This project started from that hope. We asked ourselves, Can we predict prices based on historical data?
 This project explores Bitcoin (BTC) and Ethereum (ETH) price data through data cleaning, feature engineering, exploratory data analysis (EDA), and machine learning modeling. The goal is to understand price movements, engineer predictive features, and train models to forecast short-term (5-day ahead) closing prices.
@@ -21,6 +23,31 @@ crypto-data-analysis/
   - `scipy` → Outlier detection (Z-score)  
   - `xgboost` → Machine Learning (regression model)  
   - `scikit-learn` → Train/test split, metrics, evaluation
+
+## ⚙️ Setup Instructions (Dev Container)
+This project includes a Dev Container setup for reproducible development.
+
+Requirements
+[Visual Studio Code](https://code.visualstudio.com)
+[Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+Steps
+1. Open the project root folder in VS Code
+2. Press Ctrl+Shift+P → choose Dev Containers: Reopen in Container
+3. Wait for the container to build and initialize
+4. You are now inside a reproducible dev environment 🎉
+
+## ▶️ Running & Testing
+Run Main Script: 
+Inside the Dev Container:
+```bash
+python HW2_Claire\ Oh.py
+```
+
+Run Tests: 
+```bash
+python pytest tests/
+```
  
 ## 🔎 Workflow  
 ### 1️⃣ **Import & Load Data**  
